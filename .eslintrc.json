@@ -10,7 +10,11 @@
     "react-native/react-native": true
   },
   "plugins": ["react", "react-native"],
-  "extends": ["eslint:recommended", "plugin:react/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
+  ],
   "rules": {
     "react-native/no-unused-styles": 2,
     "react-native/split-platform-components": 2,
