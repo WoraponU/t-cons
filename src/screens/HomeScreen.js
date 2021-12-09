@@ -77,11 +77,15 @@ const HomeScreen = ({ navigation }) => {
       <MapView
         onPoiClick={(e) => alert(e)}
         onPress={(e) => console.log(e.nativeEvent)}
-        region={{
-          latitude: mapViewLocation?.latitude || defaultLocation.latitude,
-          longitude: mapViewLocation?.longitude || defaultLocation.longitude,
+        initialRegion={{
+          latitude: defaultLocation.latitude,
+          longitude: defaultLocation.longitude,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
+        }}
+        region={{
+          latitude: mapViewLocation?.latitude,
+          longitude: mapViewLocation?.longitude,
         }}
         zoomEnabled
         style={{ width: "100%", height: "100%" }}
@@ -122,7 +126,7 @@ const HomeScreen = ({ navigation }) => {
           background="primary.400"
           startIcon={<AntDesign name="search1" size={24} color="white" />}
           onPress={() => {
-            navigation.navigate("List");
+            navigation.navigate("List", { pinLocation });
           }}
         />
       </Flex>
