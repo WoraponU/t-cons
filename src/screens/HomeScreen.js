@@ -4,12 +4,14 @@ import * as Location from "expo-location";
 import { Box, Button, Flex, useToast } from "native-base";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import MapView, { Marker } from "react-native-maps";
+import { delay } from "../helper";
 
 const HomeScreen = ({ navigation }) => {
   const toast = useToast();
 
   const [isLoading, setIsloading] = useState(false);
   const [pinLocation, setPinLocation] = useState(null);
+  const [mapViewLocation, setMapViewLocation] = useState(null);
 
   // function
   const getCurrentLocation = useCallback(async () => {
@@ -26,10 +28,12 @@ const HomeScreen = ({ navigation }) => {
         setIsloading(true);
         const location = await Location.getCurrentPositionAsync({});
 
-        setPinLocation({
+        const targetLocation = {
           latitude: location?.coords?.latitude,
           longitude: location?.coords?.longitude,
-        });
+        };
+        setPinLocation(targetLocation);
+        setMapViewLocation(targetLocation);
       } catch (err) {
         console.error(err);
       } finally {
@@ -37,13 +41,15 @@ const HomeScreen = ({ navigation }) => {
       }
     }
   }, [toast]);
-  const onDragPin = useCallback((e) => {
+  const onDragPin = useCallback(async (e) => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
-
-    setPinLocation({
+    const targetLocation = {
       latitude,
       longitude,
-    });
+    };
+    setPinLocation(targetLocation);
+    await delay(1000);
+    setMapViewLocation(targetLocation);
   }, []);
 
   // hook
@@ -53,10 +59,11 @@ const HomeScreen = ({ navigation }) => {
   }, []);
 
   // render
-  const bankkokLocation = useMemo(() => {
+  const defaultLocation = useMemo(() => {
+    // suphanburi
     return {
-      latitude: 13.7248936,
-      longitude: 100.4930255,
+      latitude: 14.5699883,
+      longitude: 99.5021254,
     };
   }, []);
 
@@ -71,8 +78,8 @@ const HomeScreen = ({ navigation }) => {
         onPoiClick={(e) => alert(e)}
         onPress={(e) => console.log(e.nativeEvent)}
         region={{
-          latitude: pinLocation?.latitude || bankkokLocation.latitude,
-          longitude: pinLocation?.longitude || bankkokLocation.longitude,
+          latitude: mapViewLocation?.latitude || defaultLocation.latitude,
+          longitude: mapViewLocation?.longitude || defaultLocation.longitude,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
@@ -81,7 +88,7 @@ const HomeScreen = ({ navigation }) => {
       >
         {pinLocation && (
           <Marker
-            title="ค้นหาบริเวณนี้"
+            title="กดค้างเพื่อย้ายบริเวณค้นหา"
             draggable
             coordinate={{
               latitude: pinLocation?.latitude,
