@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-import { Box, Flex, Image, Text, useToast } from "native-base";
+import { Box, Button, Flex, Image, Text, useToast } from "native-base";
 import React, { useCallback, useEffect, useState } from "react";
+import { Linking, Platform } from "react-native";
 
 const list = [
   {
@@ -69,7 +70,7 @@ const HomeScreen = () => {
     } finally {
       setIsloading(false);
     }
-  }, [toast]);
+  }, []);
 
   // hook
   useEffect(() => {
@@ -78,44 +79,70 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <Box flex="1" position="relative" margin="4">
-      {storeList?.map((list) => {
+    <Flex
+      flexDirection="row"
+      flexWrap="wrap"
+      flex="1"
+      position="relative"
+      margin="4"
+    >
+      {storeList?.map((list, index) => {
         return (
           <>
             <CardList key={list.name} name={list.name} />
+            {index % 2 === 1 && <Flex flexBasis="100%" width="0" />}
           </>
         );
       })}
-    </Box>
+    </Flex>
   );
 };
 
 export default HomeScreen;
 
 const CardList = ({ name }) => {
+  const openGoogleMap = (lat, lng) => {
+    // var scheme = Platform.OS === "ios" ? "maps:" : "geo:";
+    // var url = scheme + `${lat},${lng}`;
+    // Linking.openURL(url);
+    if (Platform.OS === "ios") {
+      Linking.openURL(`maps://app?daddr=${lat}+${lng}`);
+    }
+
+    // <TouchableOpacity onPress={() => Linking.openURL('google.navigation:q=100+101')}></TouchableOpacity>
+
+    // <TouchableOpacity onPress={() => Linking.openURL('maps://app?saddr=100+101&daddr=100+102')}>
+  };
+
   return (
     <Flex
-      marginBottom="4"
+      marginX="1"
+      marginBottom="2"
       background="white"
       shadow="4"
-      borderRadius="md"
+      borderRadius="sm"
       padding="2"
-      height="100"
-      flexDirection="row"
+      flexGrow="1"
+      flexDirection="column"
     >
-      <Box flex="1">
-        <Text>{name}</Text>
-      </Box>
       <Image
-        flex="1"
-        marginLeft="auto"
         source={{
           uri: "https://wallpaperaccess.com/full/317501.jpg",
         }}
         alt="store photo"
-        width="50"
-        height="100%"
+        width="100%"
+        height="100"
       />
+      <Flex flexDirection="row" justifyContent="space-between">
+        <Text fontSize="lg" fontWeight="bold">
+          {name}
+        </Text>
+        <Box>
+          <Button onPress={() => openGoogleMap(14.758937, 100.0286152)}>
+            a
+          </Button>
+        </Box>
+      </Flex>
     </Flex>
   );
 };
