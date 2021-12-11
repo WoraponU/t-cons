@@ -1,14 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
 import getDistance from "geolib/es/getDistance";
 import { Flex, Image, Text, useToast } from "native-base";
-import React, { useCallback, useEffect, useState } from "react";
-import { Linking, Platform } from "react-native";
+import React, { Fragment, useEffect, useState } from "react";
 import { numberFormat } from "../helper";
 
 const storeListApi = [
   {
+    id: 1,
     name: "ก.รุ่งเจริญ",
     images: ["https://wallpaperaccess.com/full/317501.jpg"],
+    detail: "detail",
     adress: {
       text: "สุพรรณ",
       coords: {
@@ -19,8 +20,10 @@ const storeListApi = [
     },
   },
   {
+    id: 2,
     name: "ไทวัสดุ",
     images: ["https://wallpaperaccess.com/full/317501.jpg"],
+    detail: "detail",
     adress: {
       text: "สุพรรณ",
       coords: {
@@ -31,8 +34,10 @@ const storeListApi = [
     },
   },
   {
+    id: 3,
     name: "Home Pro",
     images: ["https://wallpaperaccess.com/full/317501.jpg"],
+    detail: "detail",
     adress: {
       text: "สุพรรณ",
       coords: {
@@ -43,8 +48,10 @@ const storeListApi = [
     },
   },
   {
+    id: 4,
     name: "ต.แสงสุพรรณ",
     images: ["https://wallpaperaccess.com/full/317501.jpg"],
+    detail: "detail",
     adress: {
       text: "สุพรรณ",
       coords: {
@@ -55,8 +62,10 @@ const storeListApi = [
     },
   },
   {
+    id: 5,
     name: "โรบินสัน",
     images: ["https://wallpaperaccess.com/full/317501.jpg"],
+    detail: "detail",
     adress: {
       text: "สุพรรณ",
       coords: {
@@ -67,8 +76,10 @@ const storeListApi = [
     },
   },
   {
+    id: 6,
     name: "ลาดตาลค้าวัสดุก่อสร้าง",
     images: ["https://wallpaperaccess.com/full/317501.jpg"],
+    detail: "detail",
     adress: {
       text: "สุพรรณ",
       coords: {
@@ -79,7 +90,8 @@ const storeListApi = [
     },
   },
 ];
-const ListScreen = ({ route }) => {
+
+const ListScreen = ({ route, navigation }) => {
   const { pinLocation } = route.params;
   const toast = useToast();
 
@@ -87,20 +99,14 @@ const ListScreen = ({ route }) => {
   const [, setIsloading] = useState(false);
 
   // function
-  const renderDistanceKm = useCallback(
-    (storeLocation) => {
-      return getDistance(pinLocation, storeLocation) / 1000;
-    },
-    [pinLocation]
-  );
-  const inAreaSearch = useCallback(
-    (storeLocation) => {
-      const allowDistanceArea = 10000; // 10 km
-      return getDistance(pinLocation, storeLocation) <= allowDistanceArea;
-    },
-    [pinLocation]
-  );
-  const getStoreList = useCallback(async () => {
+  const renderDistanceKm = (storeLocation) => {
+    return getDistance(pinLocation, storeLocation) / 1000;
+  };
+  const inAreaSearch = (storeLocation) => {
+    const allowDistanceArea = 10000; // 10 km
+    return getDistance(pinLocation, storeLocation) <= allowDistanceArea;
+  };
+  const getStoreList = async () => {
     try {
       setIsloading(true);
 
@@ -117,7 +123,7 @@ const ListScreen = ({ route }) => {
     } finally {
       setIsloading(false);
     }
-  }, [toast, inAreaSearch]);
+  };
 
   // hook
   useEffect(() => {
@@ -138,37 +144,31 @@ const ListScreen = ({ route }) => {
           renderDistanceKm(list?.adress?.coords)
         );
         return (
-          <>
+          <Fragment key={`${list.name}-${index}`}>
             <CardList
-              key={list.name}
+              id={list.id}
               name={list.name}
               image={list?.images?.[0]}
               distance={distance}
+              action={() => {
+                navigation.navigate("Detail", { id: list.id });
+              }}
             />
+
             {index % 2 === 1 && <Flex flexBasis="100%" width="0" />}
-          </>
+          </Fragment>
         );
       })}
+      {storeList?.length % 2 === 1 && (
+        <Flex flex="1" flexGrow="1" padding="3" />
+      )}
     </Flex>
   );
 };
 
 export default ListScreen;
 
-const CardList = ({ name, image, distance }) => {
-  const openGoogleMap = (lat, lng) => {
-    // var scheme = Platform.OS === "ios" ? "maps:" : "geo:";
-    // var url = scheme + `${lat},${lng}`;
-    // Linking.openURL(url);
-    if (Platform.OS === "ios") {
-      Linking.openURL(`maps://app?daddr=${lat}+${lng}`);
-    }
-
-    // <TouchableOpacity onPress={() => Linking.openURL('google.navigation:q=100+101')}></TouchableOpacity>
-
-    // <TouchableOpacity onPress={() => Linking.openURL('maps://app?saddr=100+101&daddr=100+102')}>
-  };
-
+const CardList = ({ name, image, distance, action }) => {
   return (
     <Flex
       marginX="1"
@@ -180,6 +180,7 @@ const CardList = ({ name, image, distance }) => {
       flexGrow="1"
       flexDirection="column"
       flex="1"
+      onTouchStart={action}
     >
       <Image
         source={{
@@ -188,6 +189,7 @@ const CardList = ({ name, image, distance }) => {
         alt="store photo"
         width="100%"
         height="100"
+        resizeMode="cover"
       />
       <Flex
         flexDirection="row"

@@ -2,7 +2,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { extendTheme, NativeBaseProvider } from "native-base";
 import React from "react";
-import { HomeScreen, ListScreen } from "./src/screens";
+import { DetailScreen, HomeScreen, ListScreen } from "./src/screens";
 
 const Stack = createNativeStackNavigator();
 const theme = extendTheme({
@@ -49,6 +49,11 @@ const App = () => {
             component={ListScreen}
             name="List"
             options={{ title: "ร้านวัสดุก่อสร้างใกล้เคียง" }}
+          />
+          <Stack.Screen
+            component={DetailScreen}
+            name="Detail"
+            options={{ title: "รายละเอียดร้านค้า" }}
           />
         </Stack.Navigator>
       </NavigationContainer>

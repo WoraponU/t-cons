@@ -2,7 +2,7 @@
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { Box, Button, Flex, useToast } from "native-base";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import MapView, { Marker } from "react-native-maps";
 import { delay } from "../helper";
 
@@ -11,10 +11,15 @@ const HomeScreen = ({ navigation }) => {
 
   const [isLoading, setIsloading] = useState(false);
   const [pinLocation, setPinLocation] = useState(null);
-  const [mapViewLocation, setMapViewLocation] = useState(null);
+  const [mapViewLocation, setMapViewLocation] = useState({
+    latitude: 14.5699883, // suphanburi
+    longitude: 99.5021254,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
 
   // function
-  const getCurrentLocation = useCallback(async () => {
+  const getCurrentLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status !== "granted") {
@@ -33,15 +38,15 @@ const HomeScreen = ({ navigation }) => {
           longitude: location?.coords?.longitude,
         };
         setPinLocation(targetLocation);
-        setMapViewLocation(targetLocation);
+        setMapViewLocation({ ...mapViewLocation, ...targetLocation });
       } catch (err) {
         console.error(err);
       } finally {
         setIsloading(false);
       }
     }
-  }, [toast]);
-  const onDragPin = useCallback(async (e) => {
+  };
+  const onDragPin = async (e) => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
     const targetLocation = {
       latitude,
@@ -49,22 +54,20 @@ const HomeScreen = ({ navigation }) => {
     };
     setPinLocation(targetLocation);
     await delay(1000);
-    setMapViewLocation(targetLocation);
-  }, []);
+    setMapViewLocation({
+      ...targetLocation,
+      latitudeDelta: mapViewLocation.latitudeDelta,
+      longitudeDelta: mapViewLocation.longitudeDelta,
+    });
+  };
+  const onRegionChange = (region) => {
+    setMapViewLocation(region);
+  };
 
   // hook
   useEffect(() => {
     getCurrentLocation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // render
-  const defaultLocation = useMemo(() => {
-    // suphanburi
-    return {
-      latitude: 14.5699883,
-      longitude: 99.5021254,
-    };
   }, []);
 
   return (
@@ -75,18 +78,13 @@ const HomeScreen = ({ navigation }) => {
       justifyContent="center"
     >
       <MapView
-        onPoiClick={(e) => alert(e)}
-        onPress={(e) => console.log(e.nativeEvent)}
-        initialRegion={{
-          latitude: defaultLocation.latitude,
-          longitude: defaultLocation.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
         region={{
           latitude: mapViewLocation?.latitude,
           longitude: mapViewLocation?.longitude,
+          latitudeDelta: mapViewLocation?.latitudeDelta,
+          longitudeDelta: mapViewLocation?.longitudeDelta,
         }}
+        onRegionChangeComplete={onRegionChange}
         zoomEnabled
         style={{ width: "100%", height: "100%" }}
       >
