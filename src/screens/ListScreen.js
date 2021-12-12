@@ -1,102 +1,26 @@
+/* eslint-disable react-native/no-raw-text */
 /* eslint-disable react-native/no-inline-styles */
+import { MaterialIcons } from "@expo/vector-icons";
 import getDistance from "geolib/es/getDistance";
-import { Flex, Image, Text, useToast } from "native-base";
+import {
+  Button,
+  Center,
+  Flex,
+  Heading,
+  Image,
+  Text,
+  useToast,
+} from "native-base";
 import React, { Fragment, useEffect, useState } from "react";
 import { numberFormat } from "../helper";
-
-const storeListApi = [
-  {
-    id: 1,
-    name: "ก.รุ่งเจริญ",
-    images: ["https://wallpaperaccess.com/full/317501.jpg"],
-    detail: "detail",
-    adress: {
-      text: "สุพรรณ",
-      coords: {
-        latitude: 14.4614911,
-        longitude: 100.1702438,
-      },
-      contact: "",
-    },
-  },
-  {
-    id: 2,
-    name: "ไทวัสดุ",
-    images: ["https://wallpaperaccess.com/full/317501.jpg"],
-    detail: "detail",
-    adress: {
-      text: "สุพรรณ",
-      coords: {
-        latitude: 14.4767031,
-        longitude: 100.1311502,
-      },
-      contact: "",
-    },
-  },
-  {
-    id: 3,
-    name: "Home Pro",
-    images: ["https://wallpaperaccess.com/full/317501.jpg"],
-    detail: "detail",
-    adress: {
-      text: "สุพรรณ",
-      coords: {
-        latitude: 14.4744684,
-        longitude: 100.1025889,
-      },
-      contact: "",
-    },
-  },
-  {
-    id: 4,
-    name: "ต.แสงสุพรรณ",
-    images: ["https://wallpaperaccess.com/full/317501.jpg"],
-    detail: "detail",
-    adress: {
-      text: "สุพรรณ",
-      coords: {
-        latitude: 14.4670853,
-        longitude: 100.129806,
-      },
-      contact: "",
-    },
-  },
-  {
-    id: 5,
-    name: "โรบินสัน",
-    images: ["https://wallpaperaccess.com/full/317501.jpg"],
-    detail: "detail",
-    adress: {
-      text: "สุพรรณ",
-      coords: {
-        latitude: 14.4573198,
-        longitude: 100.1259004,
-      },
-      contact: "",
-    },
-  },
-  {
-    id: 6,
-    name: "ลาดตาลค้าวัสดุก่อสร้าง",
-    images: ["https://wallpaperaccess.com/full/317501.jpg"],
-    detail: "detail",
-    adress: {
-      text: "สุพรรณ",
-      coords: {
-        latitude: 14.5525646,
-        longitude: 100.1938894,
-      },
-      contact: "",
-    },
-  },
-];
+import { storeService } from "../services";
 
 const ListScreen = ({ route, navigation }) => {
   const { pinLocation } = route.params;
   const toast = useToast();
 
   const [storeList, setStoreList] = useState([]);
-  const [, setIsloading] = useState(false);
+  const [isLoading, setIsloading] = useState(false);
 
   // function
   const renderDistanceKm = (storeLocation) => {
@@ -109,11 +33,12 @@ const ListScreen = ({ route, navigation }) => {
   const getStoreList = async () => {
     try {
       setIsloading(true);
+      const { data } = await storeService.list();
 
-      const allowList = storeListApi?.filter((store) => {
+      const inAreaStores = data?.filter((store) => {
         return inAreaSearch(store?.adress?.coords);
       });
-      setStoreList(allowList);
+      setStoreList(inAreaStores);
     } catch (err) {
       console.error(err);
       toast.show({
@@ -131,6 +56,57 @@ const ListScreen = ({ route, navigation }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // render
+  const renderStoreList = () => {
+    return (
+      <>
+        {storeList?.map((list, index) => {
+          const distance = numberFormat.distance(
+            renderDistanceKm(list?.adress?.coords)
+          );
+          return (
+            <Fragment key={`${list.name}-${index}`}>
+              <CardList
+                id={list.id}
+                name={list.name}
+                image={list?.images?.[0]}
+                distance={distance}
+                action={() => {
+                  navigation.navigate("Detail", { id: list.id });
+                }}
+              />
+
+              {index % 2 === 1 && <Flex flexBasis="100%" width="0" />}
+            </Fragment>
+          );
+        })}
+        {storeList?.length % 2 === 1 && (
+          <Flex flex="1" flexGrow="1" padding="3" />
+        )}
+      </>
+    );
+  };
+  const renderEmptyState = () => {
+    return (
+      <Center flex={1}>
+        <MaterialIcons name="location-pin" size={64} color="gray" />
+        <Heading fontSize="xl" color="gray.400">
+          ไม่พบร้านค้าบริเวณนี้
+        </Heading>
+        <Button
+          marginTop="6"
+          onPress={() => {
+            navigation.navigate("Home");
+          }}
+        >
+          <Heading color="white" fontSize="lg">
+            กลับไปยังหน้าแรก
+          </Heading>
+        </Button>
+      </Center>
+    );
+  };
+
   return (
     <Flex
       flexDirection="row"
@@ -138,30 +114,10 @@ const ListScreen = ({ route, navigation }) => {
       flex="1"
       position="relative"
       margin="4"
+      width="100%"
     >
-      {storeList?.map((list, index) => {
-        const distance = numberFormat.distance(
-          renderDistanceKm(list?.adress?.coords)
-        );
-        return (
-          <Fragment key={`${list.name}-${index}`}>
-            <CardList
-              id={list.id}
-              name={list.name}
-              image={list?.images?.[0]}
-              distance={distance}
-              action={() => {
-                navigation.navigate("Detail", { id: list.id });
-              }}
-            />
-
-            {index % 2 === 1 && <Flex flexBasis="100%" width="0" />}
-          </Fragment>
-        );
-      })}
-      {storeList?.length % 2 === 1 && (
-        <Flex flex="1" flexGrow="1" padding="3" />
-      )}
+      {(storeList?.length && renderStoreList()) || null}
+      {(storeList?.length === 0 && !isLoading && renderEmptyState()) || null}
     </Flex>
   );
 };

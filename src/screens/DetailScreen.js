@@ -13,6 +13,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { Linking, Platform } from "react-native";
 import PagerView from "react-native-pager-view";
+import { storeService } from "../services";
 
 const DetailScreen = ({ route }) => {
   const { id } = route.params;
@@ -26,24 +27,9 @@ const DetailScreen = ({ route }) => {
     try {
       setIsloading(true);
 
-      setStoreDetail({
-        id: 1,
-        name: "ก.รุ่งเจริญ",
-        images: [
-          "https://wallpaperaccess.com/full/317501.jpg",
-          "https://wallpaperaccess.com/full/317501.jpg",
-          "https://wallpaperaccess.com/full/317501.jpg",
-        ],
-        detail: "detail",
-        adress: {
-          text: "สุพรรณ",
-          coords: {
-            latitude: 14.4614911,
-            longitude: 100.1702438,
-          },
-          contact: "0824323453",
-        },
-      });
+      const { data } = await storeService.list();
+      const storeDetail = data?.find((store) => store.id === id);
+      setStoreDetail(storeDetail);
     } catch (err) {
       console.error(err);
       toast.show({
