@@ -21,6 +21,8 @@ export default {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#FFFFFF",
     },
+    package: "com.witeseb.t_cons",
+    versionCode: 1,
   },
   web: {
     favicon: "./assets/favicon.png",
