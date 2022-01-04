@@ -33,6 +33,11 @@ const theme = extendTheme({
       },
     },
   },
+  colors: {
+    brand: {
+      900: "#24275C",
+    },
+  },
 });
 
 const App = () => {

@@ -115,7 +115,7 @@ const DetailScreen = ({ route }) => {
             width="60"
             borderRadius="30"
             shadow="4"
-            background="primary.400"
+            background="brand.900"
             onPress={openMap}
             startIcon={
               <FontAwesome5 name="map-marked-alt" size={24} color="white" />

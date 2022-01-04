@@ -114,7 +114,6 @@ const ListScreen = ({ route, navigation }) => {
       flex="1"
       position="relative"
       margin="4"
-      width="100%"
     >
       {(storeList?.length && renderStoreList()) || null}
       {(storeList?.length === 0 && !isLoading && renderEmptyState()) || null}

@@ -1,13 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import * as Location from "expo-location";
-import { Box, Button, Flex, useToast } from "native-base";
+import { Box, Button, Flex, useTheme, useToast } from "native-base";
 import React, { useEffect, useState } from "react";
 import MapView, { Marker } from "react-native-maps";
 import { delay } from "../helper";
 
 const HomeScreen = ({ navigation }) => {
   const toast = useToast();
+  const theme = useTheme();
 
   const [isLoading, setIsloading] = useState(false);
   const [pinLocation, setPinLocation] = useState(null);
@@ -111,7 +112,11 @@ const HomeScreen = ({ navigation }) => {
           background="white"
           shadow="4"
           startIcon={
-            <MaterialIcons name="location-pin" size={24} color="#22d3ee" />
+            <MaterialIcons
+              name="location-pin"
+              size={24}
+              color={theme.colors.brand[900]}
+            />
           }
         />
         <Button
@@ -121,7 +126,7 @@ const HomeScreen = ({ navigation }) => {
           borderRadius="30"
           isLoading={isLoading}
           shadow="4"
-          background="primary.400"
+          background="brand.900"
           startIcon={<AntDesign name="search1" size={24} color="white" />}
           onPress={() => {
             navigation.navigate("List", { pinLocation });
