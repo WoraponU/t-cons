@@ -1,7 +1,7 @@
 export default {
   name: "t-cons",
   slug: "t-cons",
-  version: "1.0.0",
+  version: "3.0.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
   splash: {
@@ -21,8 +21,8 @@ export default {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#FFFFFF",
     },
-    package: "com.witeseb.t_cons",
-    versionCode: 1,
+    package: "com.witeseb.tcons",
+    versionCode: 3,
   },
   web: {
     favicon: "./assets/favicon.png",
