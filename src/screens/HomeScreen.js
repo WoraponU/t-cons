@@ -3,6 +3,7 @@ import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { Box, Button, Flex, useTheme, useToast } from "native-base";
 import React, { useEffect, useState } from "react";
+import { Platform } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { delay } from "../helper";
 
@@ -42,6 +43,10 @@ const HomeScreen = ({ navigation }) => {
         setMapViewLocation({ ...mapViewLocation, ...targetLocation });
       } catch (err) {
         console.error(err);
+        toast.show({
+          title: JSON.stringify(err),
+          status: "error",
+        });
       } finally {
         setIsloading(false);
       }
@@ -61,8 +66,14 @@ const HomeScreen = ({ navigation }) => {
       longitudeDelta: mapViewLocation.longitudeDelta,
     });
   };
-  const onRegionChange = (region) => {
-    setMapViewLocation(region);
+  const onRegionChange = (region, gesture) => {
+    if (Platform.OS === "android") {
+      if (gesture.isGesture) {
+        setMapViewLocation(region);
+      }
+    } else {
+      setMapViewLocation(region);
+    }
   };
 
   // hook
