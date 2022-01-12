@@ -112,7 +112,6 @@ const HomeScreen = ({ navigation }) => {
           />
         )}
       </MapView>
-
       <Flex right="8" bottom="8" position="absolute" direction="column">
         <Button
           height="60"
