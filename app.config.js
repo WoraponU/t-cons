@@ -1,7 +1,7 @@
 export default {
   name: "t-cons",
   slug: "t-cons",
-  version: "4.0.8",
+  version: "5.0.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
   splash: {
@@ -22,7 +22,7 @@ export default {
       backgroundColor: "#FFFFFF",
     },
     package: "com.witeseb.tcons",
-    versionCode: 4,
+    versionCode: 5,
     config: {
       googleMaps: {
         apiKey: "AIzaSyC04B8E84MbzmNhZAnvUtPbTSom6aYJmOw",
